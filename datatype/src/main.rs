@@ -1,41 +1,33 @@
 use std::mem;
 
 fn main() {
-    // capacity 是 1, len 是 0
-    let mut v = vec![1];
-    // capacity 是 8, len 是 0
-    let v1: Vec<i32> = Vec::with_capacity(8);
+    println!("hello world");
 
-    print_vec("v1", v1);
+    let x: i8 = 1;
+    let mut y: i32 = 100;
+    let y = 60;
 
-    // 我们先打印 heap 地址，然后看看添加内容是否会导致堆重分配
-    println!("heap start: {:p}", &v[0] as *const i32);
+    const MAX_NUM: u32 = 1024;
 
-    extend_vec(&mut v);
+    let a: char = 'a';
 
-    // heap 地址改变了！这就是为什么可变引用和不可变引用不能共存的原因
-    println!("new heap start: {:p}", &v[0] as *const i32);
 
-    print_vec("v", v);
+    for i in 1..=5 {
+        println!("{}", i)
+    }
+
+    let t: (i32, i32) = (100, 100);
+    t.0;
+    t.1;
+
+    let arr: [i32; 5] = [1, 2, 3, 4, 5];
+    arr[2];
+    let arr1 = [1; 5];
 }
 
-fn extend_vec(v: &mut Vec<i32>) {
-    // Vec<T> 堆内存里 T 的个数是指数增长的，我们让它恰好 push 33 个元素
-    // capacity 会变成 64
-    (2..34).into_iter().for_each(|i| v.push(i));
+
+struct ListNode {
+    val: i32,
+    next: Option<Box<ListNode>>,
 }
 
-fn print_vec<T>(name: &str, data: Vec<T>) {
-    let p: [usize; 3] = unsafe { mem::transmute(data) };
-    // 打印 Vec<T> 的堆地址，capacity，len
-    println!("{}: 0x{:x}, {}, {}", name, p[0], p[1], p[2]);
-}
-
-fn test() {
-    let mut arr = vec![1, 2, 3];
-    // cache the last item
-    let last = arr.last();
-    arr.push(4);
-    // consume previously stored last item
-    println!("last: {:?}", last);
-}
