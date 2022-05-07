@@ -62,6 +62,10 @@ fn inspect(event: WebEvent) {
 }
 
 
+// 全局变量是在在所有其他作用域之外声明的。
+static LANGUAGE: &'static str = "Rust";
+const  THRESHOLD: i32 = 10;
+
 fn main() {
     // 使用简单的写法初始化字段，并创建结构体
     let name = String::from("Peter");
