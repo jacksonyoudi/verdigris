@@ -35,7 +35,6 @@ fn main() {
 
     let x: Result<i32, &str> = Ok(-3);
     assert_eq!(x.is_ok(), true);
-    
 }
 
 struct Duck;
@@ -67,6 +66,19 @@ fn fly_static<T: Fly>(s: T) -> bool {
 }
 
 
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Point<T> {
+    fn new(x: T, y: T) -> Self {
+        Point { x: x, y: y }
+    }
+}
+
+// 静态分发
+// 单态话静态分发
 
 
 
