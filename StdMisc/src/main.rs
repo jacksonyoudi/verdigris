@@ -2,6 +2,12 @@ use std::thread;
 use std::fmt::Debug;
 use std::borrow::Cow;
 
+#[derive(Clone)]
+struct A {
+    a: i32,
+    b: Box<i32>,
+}
+
 static NTHREADS: i32 = 10;
 
 // 这是主（`main`）线程
@@ -79,6 +85,9 @@ impl<T> Point<T> {
 
 // 静态分发
 // 单态话静态分发
+
+
+
 
 
 
