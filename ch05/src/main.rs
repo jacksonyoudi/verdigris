@@ -33,5 +33,5 @@ fn main() {
 
     let rc = Rc::new(45);
     let y1 = rc.clone();
-    
+
 }
