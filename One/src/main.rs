@@ -1,3 +1,6 @@
+use std::fmt;
+use std::fmt::Formatter; // 导入 `fmt`
+
 // 这个结构体不能使用 `fmt::Display` 或 `fmt::Debug` 来进行打印。
 struct UnPrintable(i32);
 
@@ -23,6 +26,56 @@ struct Person<'a> {
     age: u8
 }
 
+
+// 带有两个数字的结构体。推导出 `Debug`，以便与 `Display` 的输出进行比较。
+#[derive(Debug)]
+struct MinMax(i64, i64);
+
+
+// 实现 `MinMax` 的 `Display`。
+impl fmt::Display for MinMax {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // 使用 `self.number` 来表示各个数据。
+        write!(f, "({}, {})", self.0, self.1)
+    }
+}
+
+// 为了比较，定义一个含有具名字段的结构体。
+#[derive(Debug)]
+struct Point2D {
+    x: f64,
+    y: f64,
+}
+
+// 类似地对 `Point2D` 实现 `Display`
+impl fmt::Display for Point2D {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "x: {}, y: {}", self.x, self.y)
+    }
+}
+
+// 定义一个包含单个 `Vec` 的结构体 `List`。
+struct List(Vec<i32>);
+
+impl fmt::Display for List {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        // 使用元组的下标获取值，并创建一个 `vec` 的引用。
+        let vec = &self.0;
+
+        write!(f, "[")?;
+
+        // 使用 `v` 对 `vec` 进行迭代，并用 `count` 记录迭代次数。
+        for (count, v) in vec.iter().enumerate() {
+            // 对每个元素（第一个元素除外）加上逗号。
+            // 使用 `?` 或 `try!` 来返回错误。
+            if count != 0 { write!(f, ", ")?; }
+            write!(f, "{}", v)?;
+        }
+
+        // 加上配对中括号，并返回一个 fmt::Result 值。
+        write!(f, "]")
+    }
+}
 
 
 fn main() {
