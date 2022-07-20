@@ -1,21 +1,41 @@
+use std::{thread, time};
+
 fn main() {
-    println!("Hello, world!");
+    // String是
+    // pub struct String {
+    //     vec: Vec<u8>,
+    // }
+    // let x = String::from("hello, world");
+    // let x = "xxx";
 
-    let an_integer = 1u32;
-    let a_boolean = true;
-    let unit = ();
+    // let y = x.to_string();
+    // println!("{},{}", x, y);
 
-    // 将 `an_integer` 复制到 `copied_integer`
-    let copied_integer = an_integer;
+    // let s1 = String::from("hello, world");
+    // let s2 = take_ownership(s1);
+    //
+    // println!("{}", s2);
 
-    println!("An integer: {:?}", copied_integer);
-    println!("A boolean: {:?}", a_boolean);
-    println!("Meet the unit value: {:?}", unit);
+    // let s = give_ownership();
+    // println!("{}", s);
 
-    // 编译器会对未使用的变量绑定产生警告；可以给变量名加上下划线前缀来消除警告。
-    let _unused_variable = 3u32;
 
-    let noisy_unused_variable = 2u32;
-    // 改正 ^ 在变量名前加上下划线以消除警告
+    let s = &String::from("hello, world");
 
+    print_str(s);
+
+    println!("{}", s);
 }
+
+
+// 可借引用
+// fn take_ownership(s: String) -> String {
+//     println!("{}", s);
+//     s
+// }
+
+fn print_str(s: &String) -> &String {
+    println!("{}", s);
+    s
+}
+
