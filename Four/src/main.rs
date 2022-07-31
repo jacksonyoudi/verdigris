@@ -25,6 +25,12 @@ fn main() {
     print_str(s);
 
     println!("{}", s);
+
+
+    let x = 1;
+    let sum = |y| x + y;
+
+    assert_eq!(3, sum(2));
 }
 
 
