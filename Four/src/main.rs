@@ -84,10 +84,10 @@ fn fn_once<F>(func: F)
 
 
 // 可借引用
-// fn take_ownership(s: String) -> String {
-//     println!("{}", s);
-//     s
-// }
+fn take_ownership(s: String) -> String {
+    println!("{}", s);
+    s
+}
 
 fn print_str(s: &String) -> &String {
     println!("{}", s);
