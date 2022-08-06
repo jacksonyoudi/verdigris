@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-#![allow(unused)]
 
 
 // 手动迭代必须将迭代器声明为 mut 可变，
