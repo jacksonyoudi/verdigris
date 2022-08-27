@@ -1,61 +1,38 @@
-#![allow(unused)]
-
-#[derive(Debug)]
-struct User {
-    active: bool,
-    username: String,
-    email: String,
-    sign_in_count: u64,
+struct HasDrop1;
+struct HasDrop2;
+impl Drop for HasDrop1 {
+    fn drop(&mut self) {
+        println!("Dropping HasDrop1!");
+    }
 }
-
-pub trait Summary {
-    fn summarize(&self) -> String;
+impl Drop for HasDrop2 {
+    fn drop(&mut self) {
+        println!("Dropping HasDrop2!");
+    }
 }
-
-pub struct Post {
-    pub title: String,
-    // 标题
-    pub author: String,
-    // 作者
-    pub content: String, // 内容
+struct HasTwoDrops {
+    one: HasDrop1,
+    two: HasDrop2,
 }
-
-
-impl Summary for Post {
-    fn summarize(&self) -> String {
-        todo!()
+impl Drop for HasTwoDrops {
+    fn drop(&mut self) {
+        println!("Dropping HasTwoDrops!");
     }
 }
 
+struct Foo;
 
-fn main() {
-    let s1 = "hello";
-
-    let (s2, len) = calculate_length(s1);
-
-    println!("The length of '{}' is {}.", s2, len);
-
-    let user1 = User {
-        email: String::from("someone@example.com"),
-        username: String::from("someusername123"),
-        active: true,
-        sign_in_count: 1,
-    };
-    let user2 = User {
-        active: user1.active,
-        username: user1.username,
-        email: String::from("another@example.com"),
-        sign_in_count: user1.sign_in_count,
-    };
-    println!("{}", user1.active);
-    dbg!(&user2);
-// 下面这行会报错
-//     println!("{:?}", user1);
+impl Drop for Foo {
+    fn drop(&mut self) {
+        println!("Dropping Foo!")
+    }
 }
 
-
-fn calculate_length(s: &str) -> (&str, usize) {
-    let length = s.len(); // len() 返回字符串的长度
-
-    (s, length)
+fn main() {
+    let _x = HasTwoDrops {
+        two: HasDrop2,
+        one: HasDrop1,
+    };
+    let _foo = Foo;
+    println!("Running!");
 }
