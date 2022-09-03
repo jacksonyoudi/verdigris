@@ -1,38 +1,60 @@
-struct HasDrop1;
-struct HasDrop2;
-impl Drop for HasDrop1 {
-    fn drop(&mut self) {
-        println!("Dropping HasDrop1!");
-    }
+
+use std::{cell::RefCell, fmt, sync::Arc, thread};
+
+struct Lock<T> {
+    locked: RefCell<bool>,
+    data: RefCell<T>,
 }
-impl Drop for HasDrop2 {
-    fn drop(&mut self) {
-        println!("Dropping HasDrop2!");
-    }
-}
-struct HasTwoDrops {
-    one: HasDrop1,
-    two: HasDrop2,
-}
-impl Drop for HasTwoDrops {
-    fn drop(&mut self) {
-        println!("Dropping HasTwoDrops!");
+
+impl<T> fmt::Debug for Lock<T>
+    where
+        T: fmt::Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Lock<{:?}>", self.data.borrow())
     }
 }
 
-struct Foo;
+// SAFETY: 我们确信 Lock<T> 很安全，可以在多个线程中共享
+unsafe impl<T> Sync for Lock<T> {}
 
-impl Drop for Foo {
-    fn drop(&mut self) {
-        println!("Dropping Foo!")
+impl<T> Lock<T> {
+    pub fn new(data: T) -> Self {
+        Self {
+            data: RefCell::new(data),
+            locked: RefCell::new(false),
+        }
+    }
+
+    pub fn lock(&self, op: impl FnOnce(&mut T)) {
+        // 如果没拿到锁，就一直 spin
+        while *self.locked.borrow() != false {} // **1
+
+        // 拿到，赶紧加锁
+        *self.locked.borrow_mut() = true; // **2
+
+        // 开始干活
+        op(&mut self.data.borrow_mut()); // **3
+
+        // 解锁
+        *self.locked.borrow_mut() = false; // **4
     }
 }
 
 fn main() {
-    let _x = HasTwoDrops {
-        two: HasDrop2,
-        one: HasDrop1,
-    };
-    let _foo = Foo;
-    println!("Running!");
+    let data = Arc::new(Lock::new(0));
+
+    let data1 = data.clone();
+    let t1 = thread::spawn(move || {
+        data1.lock(|v| *v += 10);
+    });
+
+    let data2 = data.clone();
+    let t2 = thread::spawn(move || {
+        data2.lock(|v| *v *= 10);
+    });
+    t1.join().unwrap();
+    t2.join().unwrap();
+
+    println!("data: {:?}", data);
 }
