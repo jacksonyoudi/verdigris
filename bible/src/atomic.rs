@@ -1,9 +1,15 @@
-mod atomic;
-
-use std::{cell::RefCell, fmt, sync::Arc, thread};
+use std::{
+    cell::RefCell,
+    fmt,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
+    thread,
+};
 
 struct Lock<T> {
-    locked: RefCell<bool>,
+    locked: AtomicBool,
     data: RefCell<T>,
 }
 
@@ -23,30 +29,27 @@ impl<T> Lock<T> {
     pub fn new(data: T) -> Self {
         Self {
             data: RefCell::new(data),
-            locked: RefCell::new(false),
+            locked: AtomicBool::new(false),
         }
     }
 
     pub fn lock(&self, op: impl FnOnce(&mut T)) {
         // 如果没拿到锁，就一直 spin
-        while *self.locked.borrow() != false {} // **1
+        while self
+            .locked
+            .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
+            .is_err()
+        {} // **1
 
-
-        // while self .locked .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed) .is_err() {}
-
-
-        // 拿到，赶紧加锁
-        *self.locked.borrow_mut() = true; // **2
-
-        // 开始干活
+        // 已经拿到并加锁，开始干活
         op(&mut self.data.borrow_mut()); // **3
 
         // 解锁
-        *self.locked.borrow_mut() = false; // **4
+        self.locked.store(false, Ordering::Release);
     }
 }
 
-fn main() {
+fn main2() {
     let data = Arc::new(Lock::new(0));
 
     let data1 = data.clone();
