@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 into_iter 会夺走所有权
 iter 是借用
